@@ -9,7 +9,7 @@ const RouterTask = require('./routers/tasks')
 
 const port = process.env.PORT
 
-// app.use(express.json())  //to convert the data in json form
+app.use(express.json())  //to convert the data in json form
 app.use(RouterUser)
 app.use(RouterTask)
 
