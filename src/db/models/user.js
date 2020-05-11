@@ -2,12 +2,14 @@ var mongoose = require('mongoose');
 var validator = require('validator')
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const FencyError = require('../../Error/customError')
 const Task = require('./tasks')
 
 const userSchema = mongoose.Schema({
     name:{
         type:String,
-        require:true
+        require:true,
+        minlength:[3,'Enter Your name'],
     },
     age:{
         type:Number,
@@ -30,11 +32,11 @@ const userSchema = mongoose.Schema({
     password:{
         type:String,
         require:true,
-        minlength:7,
+        minlength:[7,'password must be at least 7 characters.'],
         trim:true,
         validate(value){
             if(value.toLowerCase().includes('password')){
-                throw new Error('Please Enter password greater then 6')
+            throw new Error('Username must be at least 7 character')
         }
     }
     },
@@ -66,7 +68,6 @@ const userSchema = mongoose.Schema({
         const UserObject = user.toObject()    //mongoose method
        
         delete UserObject.password
-        delete UserObject.tokens
         delete UserObject.avatar
 
         return UserObject
@@ -77,6 +78,7 @@ const userSchema = mongoose.Schema({
         const token = jwt.sign({_id:this._id.toString()},'thisismyfirstnodejsproject')
         this.tokens = this.tokens.concat({token:token})
         await this.save()
+        return token
     }
 
     //login statics schema  for auth users

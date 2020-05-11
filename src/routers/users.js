@@ -3,7 +3,9 @@ const router = new express.Router()
 const User = require('../db/models/user') 
 const auth = require('../middleware/auth')
 const sharp = require('sharp')
+const errorHandler = require('../Error/customError')
 var multer  = require('multer')
+
 var upload = multer({ 
 limits:{
     fileSize:1000000
@@ -15,7 +17,8 @@ fileFilter(req,file,cb){
     cb(undefined,true)
 
 } })
- 
+
+
 
 router.post('/profile/me', auth,upload.single('avatar'),async function (req, res, next) {
     const buffer = await sharp(req.file.buffer).resize({width:250,height:250}).png().toBuffer() // to convert the images
@@ -58,9 +61,13 @@ router.post('/users', async (req,res)=>{
     try{
      await user.save()
      const token = await user.generateAuthToken()
-     res.status(201).send({user,token})
+     res.cookie('name','anythingsss')
+    res.status(201).send({user,token})
     }catch (e){
-    res.status(400).send(e)
+    errorHandler(e).then((result)=>{
+    res.status(400).send(result)
+    })
+  
     }
 })
 
@@ -95,7 +102,8 @@ router.post('/users/logout/all',auth,async(req,res)=>{
 router.get('/users',async (req,res)=>{
     try{
        const users = await User.find()
-        res.send(users)
+      res.cookie('name','anything')
+       res.send(users)
     }catch{
         res.status(500).send('User Not found')
     }      
@@ -143,7 +151,9 @@ router.post('/users/login',async (req,res)=>{
     try{
         const user = await User.findByCredentials(req.body.email,req.body.password)
         const token = await user.generateAuthToken()
-        res.send({user,token})
+        // res.cookie('token',token)
+        // console.log(token)
+        res.status(200).send({user,token})
     }catch(e){
         res.status(404).send(e)
 
