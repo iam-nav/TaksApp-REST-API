@@ -61,7 +61,6 @@ router.post('/users', async (req,res)=>{
     try{
      await user.save()
      const token = await user.generateAuthToken()
-     res.cookie('name','anythingsss')
     res.status(201).send({user,token})
     }catch (e){
     errorHandler(e).then((result)=>{
@@ -102,7 +101,6 @@ router.post('/users/logout/all',auth,async(req,res)=>{
 router.get('/users',async (req,res)=>{
     try{
        const users = await User.find()
-      res.cookie('name','anything')
        res.send(users)
     }catch{
         res.status(500).send('User Not found')
@@ -151,9 +149,7 @@ router.post('/users/login',async (req,res)=>{
     try{
         const user = await User.findByCredentials(req.body.email,req.body.password)
         const token = await user.generateAuthToken()
-        // res.cookie('token',token)
-        // console.log(token)
-        res.status(200).send({user,token})
+        res.status(200).send({token})
     }catch(e){
         res.status(404).send(e)
 
