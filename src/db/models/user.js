@@ -85,11 +85,11 @@ const userSchema = mongoose.Schema({
     userSchema.statics.findByCredentials = async (email,password)=>{
         const user =  await User.findOne({email:email})
         if(!user){
-        throw new Error('unable to login')
+        throw ('Please enter a valid email address')
         }
        const isMatch = await bcrypt.compare(password, user.password);
         if(!isMatch) {
-          return console.log('unable to connect password')
+        throw ('Please check your Credentials')
         }
         return user   
     }
